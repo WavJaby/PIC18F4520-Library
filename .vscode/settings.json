@@ -1,0 +1,17 @@
+{
+    "vslabx.mplabxFolderLocation": "C:\\Program Files (x86)\\Microchip\\MPLABX",
+    "C_Cpp.files.exclude": {
+        "build/**": true,
+        "dist/**": true,
+        "C:/Program Files/Microchip/xc8/v2.50/pic/include/proc/**": true,
+    },
+    "search.exclude": {
+        "build/**": true,
+        "dist/**": true,
+        "C:/Program Files/Microchip/xc8/v2.50/pic/include/proc/**": true,
+    },
+    "files.associations": {
+        "*.h": "c",
+        "*.inc": "c"
+    }
+}

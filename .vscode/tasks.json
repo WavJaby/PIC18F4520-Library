@@ -1,0 +1,24 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "MPLABX Build",
+			"type": "mplabx",
+			"task": "build",
+			"projectFolder": "${workspaceFolder}",
+			"problemMatcher": [
+				{
+					"base": "$xc",
+					"fileLocation": [
+						"relative",
+						"${workspaceFolder}/{Path to MPLABX Project}"
+					],
+				}
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}
