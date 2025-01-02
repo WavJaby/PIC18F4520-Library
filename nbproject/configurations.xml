@@ -68,7 +68,7 @@
         <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
-      <item path="2_a.c" ex="true" overriding="false">
+      <item path="1_b.c" ex="true" overriding="false">
       </item>
       <item path="2_b.c" ex="true" overriding="false">
       </item>

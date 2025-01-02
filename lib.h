@@ -15,23 +15,23 @@
 #define _pinGetPortBits(reg, port, pin) MACRO_CODE_CONCAT3(reg, port, bits)
 #define _pinGetPinBit(reg, port, pin) MACRO_CODE_CONCAT(reg, pin)
 
-#define AD_CLOCK_SOURCE_2TOSC 0b000  // Max device frequance: 2.86 MHz
-#define AD_CLOCK_SOURCE_4TOSC 0b100  // Max device freqOscillator Switchover mode disableduance: 5.71 MHz
-#define AD_CLOCK_SOURCE_8TOSC 0b001  // Max device frequance: 11.43 MHz
-#define AD_CLOCK_SOURCE_16TOSC 0b101 // Max device frequance: 22.86 MHz
-#define AD_CLOCK_SOURCE_32TOSC 0b010 // Max device frequance: 40.0 MHz
-#define AD_CLOCK_SOURCE_64TOSC 0b110 // Max device frequance: 40.0 MHz
-#define AD_CLOCK_SOURCE_RC 0b011     // Max device frequance: 1.00 MHz
+#define AD_CLOCK_SOURCE_2TOSC 0b000   // Max device frequance: 2.86 MHz
+#define AD_CLOCK_SOURCE_4TOSC 0b100   // Max device freqOscillator Switchover mode disableduance: 5.71 MHz
+#define AD_CLOCK_SOURCE_8TOSC 0b001   // Max device frequance: 11.43 MHz
+#define AD_CLOCK_SOURCE_16TOSC 0b101  // Max device frequance: 22.86 MHz
+#define AD_CLOCK_SOURCE_32TOSC 0b010  // Max device frequance: 40.0 MHz
+#define AD_CLOCK_SOURCE_64TOSC 0b110  // Max device frequance: 40.0 MHz
+#define AD_CLOCK_SOURCE_RC 0b011      // Max device frequance: 1.00 MHz
 
 // Internal Oscillator Frequency Select bits
-#define INTERNAL_CLOCK_8MHz 0b111   // 8 MHz (INTOSC drives clock directly)
-#define INTERNAL_CLOCK_4MHz 0b110   // 4 MHz
-#define INTERNAL_CLOCK_2MHz 0b101   // 2 MHz
-#define INTERNAL_CLOCK_1MHz 0b100   // 1 MHz(3)
-#define INTERNAL_CLOCK_500kHz 0b011 // 500 kHz
-#define INTERNAL_CLOCK_250kHz 0b010 // 250 kHz
-#define INTERNAL_CLOCK_125kHz 0b001 // 125 kHz
-#define INTERNAL_CLOCK_31kHz 0b000  // 31 kHz (from either INTOSC/256 or INTRC directly)(2)
+#define INTERNAL_CLOCK_8MHz 0b111    // 8 MHz (INTOSC drives clock directly)
+#define INTERNAL_CLOCK_4MHz 0b110    // 4 MHz
+#define INTERNAL_CLOCK_2MHz 0b101    // 2 MHz
+#define INTERNAL_CLOCK_1MHz 0b100    // 1 MHz(3)
+#define INTERNAL_CLOCK_500kHz 0b011  // 500 kHz
+#define INTERNAL_CLOCK_250kHz 0b010  // 250 kHz
+#define INTERNAL_CLOCK_125kHz 0b001  // 125 kHz
+#define INTERNAL_CLOCK_31kHz 0b000   // 31 kHz (from either INTOSC/256 or INTRC directly)(2)
 #if (_XTAL_FREQ == 32000000)
 #define INTERNAL_CLOCK_IRCF INTERNAL_CLOCK_8MHz
 #define AD_CLOCK_SOURCE AD_CLOCK_SOURCE_32TOSC
@@ -212,10 +212,8 @@
  * @param prescale 1, 2, 4, 8
  */
 #define setTimer1InterruptPeriod(period, prescale)                                                             \
-    do                                                                                                         \
-    {                                                                                                          \
-        if (prescale != 1 && prescale != 2 && prescale != 4 && prescale != 8)                                  \
-        {                                                                                                      \
+    do {                                                                                                       \
+        if (prescale != 1 && prescale != 2 && prescale != 4 && prescale != 8) {                                \
             /* Invalid prescaler value */                                                                      \
             break;                                                                                             \
         }                                                                                                      \
@@ -293,22 +291,22 @@
 
 #pragma region PWM_Control
 
-#define ECCP_MODE_OFF 0b0000         // Capture/Compare/PWM off (resets ECCP module)
-#define ECCP_MODE_RESERVED 0b0001    // Reserved
-#define ECCP_MODE_COMPARE_TOM 0b0010 // Compare mode, toggle output on match
-#define ECCP_MODE_CAPTURE 0b0011     // Capture mode
-#define ECCP_MODE_CAPTURE_EFE 0b0100 // Capture mode, every falling edge
-#define ECCP_MODE_CAPTURE_ERE 0b0101 // Capture mode, every rising edge
-#define ECCP_MODE_CAPTURE_R04 0b0110 // Capture mode, every 4th rising edge
-#define ECCP_MODE_CAPTURE_R16 0b0111 // Capture mode, every 16th rising edge
-#define ECCP_MODE_COMPARE_SOM 0b1000 // Compare mode, initialize CCP1 pin low; set output on compare match (set CCP1IF)
-#define ECCP_MODE_COMPARE_COM 0b1001 // Compare mode, initialize CCP1 pin high; clear output on compare match (set CCP1IF)
-#define ECCP_MODE_COMPARE_RIO 0b1010 // Compare mode, generate software interrupt only; CCP1 pin reverts to I/O state
-#define ECCP_MODE_COMPARE_TSE 0b1011 // Compare mode, trigger special event (ECCP resets TMR1 or TMR3, sets CCP1IF bit)
-#define ECCP_MODE_PWM_HH 0b1100      // PWM mode, P1A, P1C active-high; P1B, P1D active-high
-#define ECCP_MODE_PWM_HL 0b1101      // PWM mode, P1A, P1C active-high; P1B, P1D active-low
-#define ECCP_MODE_PWM_LH 0b1110      // PWM mode, P1A, P1C active-low; P1B, P1D active-high
-#define ECCP_MODE_PWM_LL 0b1111      // PWM mode, P1A, P1C active-low; P1B, P1D active-low
+#define ECCP_MODE_OFF 0b0000          // Capture/Compare/PWM off (resets ECCP module)
+#define ECCP_MODE_RESERVED 0b0001     // Reserved
+#define ECCP_MODE_COMPARE_TOM 0b0010  // Compare mode, toggle output on match
+#define ECCP_MODE_CAPTURE 0b0011      // Capture mode
+#define ECCP_MODE_CAPTURE_EFE 0b0100  // Capture mode, every falling edge
+#define ECCP_MODE_CAPTURE_ERE 0b0101  // Capture mode, every rising edge
+#define ECCP_MODE_CAPTURE_R04 0b0110  // Capture mode, every 4th rising edge
+#define ECCP_MODE_CAPTURE_R16 0b0111  // Capture mode, every 16th rising edge
+#define ECCP_MODE_COMPARE_SOM 0b1000  // Compare mode, initialize CCP1 pin low; set output on compare match (set CCP1IF)
+#define ECCP_MODE_COMPARE_COM 0b1001  // Compare mode, initialize CCP1 pin high; clear output on compare match (set CCP1IF)
+#define ECCP_MODE_COMPARE_RIO 0b1010  // Compare mode, generate software interrupt only; CCP1 pin reverts to I/O state
+#define ECCP_MODE_COMPARE_TSE 0b1011  // Compare mode, trigger special event (ECCP resets TMR1 or TMR3, sets CCP1IF bit)
+#define ECCP_MODE_PWM_HH 0b1100       // PWM mode, P1A, P1C active-high; P1B, P1D active-high
+#define ECCP_MODE_PWM_HL 0b1101       // PWM mode, P1A, P1C active-high; P1B, P1D active-low
+#define ECCP_MODE_PWM_LH 0b1110       // PWM mode, P1A, P1C active-low; P1B, P1D active-high
+#define ECCP_MODE_PWM_LL 0b1111       // PWM mode, P1A, P1C active-low; P1B, P1D active-low
 /**
  * ENHANCED CAPTURE/COMPARE/PWM (ECCP) MODULE
  * CCP1CON: ECCP CONTROL REGISTER (40/44-PIN DEVICES)
@@ -321,8 +319,7 @@
  * @param prescale 1, 4, 16
  */
 #define setCCP1PwmDutyCycle(length, prescale)                                                \
-    do                                                                                       \
-    {                                                                                        \
+    do {                                                                                     \
         unsigned int value = (unsigned int)((length) / (1000000.0 / _XTAL_FREQ) / prescale); \
         CCP1CONbits.DC1B = (byte)value & 0b11;                                               \
         CCPR1L = (byte)(value >> 2);                                                         \
@@ -332,8 +329,7 @@
  * @param prescale 1, 4, 16
  */
 #define setCCP2PwmDutyCycle(length, prescale)                                                \
-    do                                                                                       \
-    {                                                                                        \
+    do {                                                                                     \
         unsigned int value = (unsigned int)((length) / (1000000.0 / _XTAL_FREQ) / prescale); \
         CCP2CONbits.DC2B = (byte)value & 0b11;                                               \
         CCPR2L = (byte)(value >> 2);                                                         \
@@ -342,42 +338,42 @@
 #pragma endregion PWM_Control
 
 #pragma region PIC18F4520_Pins
-#define PIN_MCLR      // 1    MCLR / VPP / RE3
-#define PIN_RA0 A, A0 // 2    RA0 / AN0
-#define PIN_RA1 A, A1 // 3    RA1 / AN1
-#define PIN_RA2 A, A2 // 4    RA2 / AN2 / VREF- / CVREF
-#define PIN_RA3 A, A3 // 5    RA3 / AN3 / VREF+
-#define PIN_RA4 A, A4 // 6    RA4 / T0CKI / C1OUT
-#define PIN_RA5 A, A5 // 7    RA5 / AN4 / SS / HLVDIN / C2OUT
-#define PIN_RE0 E, E0 // 8    RE0 / RD / AN5
-#define PIN_RE1 E, E1 // 9    RE1 / WR / AN6
-#define PIN_RE2 E, E2 // 10   RE2 / CS / AN7
-#define PIN_OSC1      // 13   OSC1 / CLKI / RA7
-#define PIN_OSC2      // 14   OSC2 / CLKO / RA6
-#define PIN_RC0 C, C0 // 15   RC0 / T1OSO / T13CKI
-#define PIN_RC1 C, C1 // 16   RC1 / T1OSI / CCP2
-#define PIN_RC2 C, C2 // 17   RC2 / CCP1 / P1A
-#define PIN_RC3 C, C3 // 18   RC3 / SCK / SCL
-#define PIN_RD0 D, D0 // 19   RD0 / PSP0
-#define PIN_RD1 D, D1 // 20   RD1 / PSP1
-#define PIN_RD2 D, D2 // 21   RD2 / PSP2
-#define PIN_RD3 D, D3 // 22   RD3 / PSP3
-#define PIN_RC4 C, C4 // 23   RC4 / SDI / SDA
-#define PIN_RC5 C, C5 // 24   RC5 / SDO
-#define PIN_RC6 C, C6 // 25   RC6 / TX / CK
-#define PIN_RC7 C, C7 // 26   RC7 / RX / DT
-#define PIN_RD4 D, D4 // 27   RD4 / PSP4
-#define PIN_RD5 D, D5 // 28   RD5 / PSP5 / P1B
-#define PIN_RD6 D, D6 // 29   RD6 / PSP6 / P1C
-#define PIN_RD7 D, D7 // 30   RD7 / PSP7 / P1D
-#define PIN_RB0 B, B0 // 33   RB0 / INT0 / FLT0 / AN12
-#define PIN_RB1 B, B1 // 34   RB1 / INT1 / AN10
-#define PIN_RB2 B, B2 // 35   RB2 / INT2 / AN8
-#define PIN_RB3 B, B3 // 36   RB3 / AN9 / CCP2
-#define PIN_RB4 B, B4 // 37   RB4 / KBI0 / AN11
-#define PIN_RB5 B, B5 // 38   RB5 / KBI1 / PGM
-#define PIN_RB6 B, B6 // 39   RB6 / KBI2 / PGC
-#define PIN_RB7 B, B7 // 40   RB7 / KBI3 / PGD
+#define PIN_MCLR       // 1    MCLR / VPP / RE3
+#define PIN_RA0 A, A0  // 2    RA0 / AN0
+#define PIN_RA1 A, A1  // 3    RA1 / AN1
+#define PIN_RA2 A, A2  // 4    RA2 / AN2 / VREF- / CVREF
+#define PIN_RA3 A, A3  // 5    RA3 / AN3 / VREF+
+#define PIN_RA4 A, A4  // 6    RA4 / T0CKI / C1OUT
+#define PIN_RA5 A, A5  // 7    RA5 / AN4 / SS / HLVDIN / C2OUT
+#define PIN_RE0 E, E0  // 8    RE0 / RD / AN5
+#define PIN_RE1 E, E1  // 9    RE1 / WR / AN6
+#define PIN_RE2 E, E2  // 10   RE2 / CS / AN7
+#define PIN_OSC1       // 13   OSC1 / CLKI / RA7
+#define PIN_OSC2       // 14   OSC2 / CLKO / RA6
+#define PIN_RC0 C, C0  // 15   RC0 / T1OSO / T13CKI
+#define PIN_RC1 C, C1  // 16   RC1 / T1OSI / CCP2
+#define PIN_RC2 C, C2  // 17   RC2 / CCP1 / P1A
+#define PIN_RC3 C, C3  // 18   RC3 / SCK / SCL
+#define PIN_RD0 D, D0  // 19   RD0 / PSP0
+#define PIN_RD1 D, D1  // 20   RD1 / PSP1
+#define PIN_RD2 D, D2  // 21   RD2 / PSP2
+#define PIN_RD3 D, D3  // 22   RD3 / PSP3
+#define PIN_RC4 C, C4  // 23   RC4 / SDI / SDA
+#define PIN_RC5 C, C5  // 24   RC5 / SDO
+#define PIN_RC6 C, C6  // 25   RC6 / TX / CK
+#define PIN_RC7 C, C7  // 26   RC7 / RX / DT
+#define PIN_RD4 D, D4  // 27   RD4 / PSP4
+#define PIN_RD5 D, D5  // 28   RD5 / PSP5 / P1B
+#define PIN_RD6 D, D6  // 29   RD6 / PSP6 / P1C
+#define PIN_RD7 D, D7  // 30   RD7 / PSP7 / P1D
+#define PIN_RB0 B, B0  // 33   RB0 / INT0 / FLT0 / AN12
+#define PIN_RB1 B, B1  // 34   RB1 / INT1 / AN10
+#define PIN_RB2 B, B2  // 35   RB2 / INT2 / AN8
+#define PIN_RB3 B, B3  // 36   RB3 / AN9 / CCP2
+#define PIN_RB4 B, B4  // 37   RB4 / KBI0 / AN11
+#define PIN_RB5 B, B5  // 38   RB5 / KBI1 / PGM
+#define PIN_RB6 B, B6  // 39   RB6 / KBI2 / PGC
+#define PIN_RB7 B, B7  // 40   RB7 / KBI3 / PGD
 #pragma endregion PIC18F4520_Pins
 
 #pragma region PinControl
@@ -548,17 +544,16 @@
  */
 #define serialReceiveFramingError() RCSTAbits.FERR
 
-inline void serialBegin(long baudRate, byte receiveInterruptPriority)
-{
-    pinMode(PIN_RC6, PIN_OUTPUT); // RC6(TX)
-    pinMode(PIN_RC7, PIN_INPUT);  // RC7(RX)
+inline void serialBegin(long baudRate, byte receiveInterruptPriority) {
+    pinMode(PIN_RC6, PIN_OUTPUT);  // RC6(TX)
+    pinMode(PIN_RC7, PIN_INPUT);   // RC7(RX)
 
     // Setting Baud rate
-    TXSTAbits.SYNC = 0;    // Asynchronus
-    BAUDCONbits.BRG16 = 1; // 16 bits or 8 bits
+    TXSTAbits.SYNC = 0;     // Asynchronus
+    BAUDCONbits.BRG16 = 1;  // 16 bits or 8 bits
 
     long baudRateGenerator = _XTAL_FREQ / baudRate;
-    TXSTAbits.BRGH = baudRate > 2400; // High Baud Rate Select bit
+    TXSTAbits.BRGH = baudRate > 2400;  // High Baud Rate Select bit
 
     // https://ww1.microchip.com/downloads/en/devicedoc/39631e.pdf#page=207
     if (!TXSTAbits.SYNC && !BAUDCONbits.BRG16 && !TXSTAbits.BRGH)
@@ -573,9 +568,9 @@ inline void serialBegin(long baudRate, byte receiveInterruptPriority)
     SPBRG = (byte)baudRateGenerator;
 
     // Serial enable
-    RCSTAbits.SPEN = 1; // Enable serial port (configures RX/DT and TX/CK pins as serial port pins)
-    TXSTAbits.TXEN = 1; // Enable transmission
-    RCSTAbits.CREN = 1; // Continuous receive enable bit, will be cleared when error occured
+    RCSTAbits.SPEN = 1;  // Enable serial port (configures RX/DT and TX/CK pins as serial port pins)
+    TXSTAbits.TXEN = 1;  // Enable transmission
+    RCSTAbits.CREN = 1;  // Continuous receive enable bit, will be cleared when error occured
     enableInterrupt_ReceiveUART(receiveInterruptPriority);
 
     /* Transmitter (output)
@@ -591,27 +586,20 @@ inline void serialBegin(long baudRate, byte receiveInterruptPriority)
 
 #define serialAvailableForWrite() TXSTAbits.TRMT
 
-void serialWrite(char c)
-{
-    while (!serialAvailableForWrite())
-        ;      // Busy Waiting
-    TXREG = c; // write to TXREG will send data
+void serialWrite(char c) {
+    while (!serialAvailableForWrite());  // Busy Waiting
+    TXREG = c;                           // write to TXREG will send data
 }
 
-void serialPrint(char *text)
-{
-    for (int i = 0; text[i] != '\0'; i++)
-    {
-        while (!serialAvailableForWrite())
-            ;            // Busy Waiting
-        TXREG = text[i]; // write to TXREG will send data
+void serialPrint(char *text) {
+    for (int i = 0; text[i] != '\0'; i++) {
+        while (!serialAvailableForWrite());  // Busy Waiting
+        TXREG = text[i];                     // write to TXREG will send data
     }
 }
 
-char serialRead()
-{
-    while (!interruptByReceiveUART())
-        ;
+char serialRead() {
+    while (!interruptByReceiveUART());
     return RCREG;
 }
 
@@ -621,23 +609,18 @@ char serialBuffer[64];
 byte serialBufferLen = 0;
 char serialLastChar = '\0';
 
-bool processSerialReceive()
-{
-    if (interruptByReceiveUART())
-    {
+bool processSerialReceive() {
+    if (interruptByReceiveUART()) {
         // Clear overrun error
-        if (serialReceiveOverrunError())
-        {
+        if (serialReceiveOverrunError()) {
             serialReceiveEnable(0);
             Nop();
             serialReceiveEnable(1);
         }
         char c = serialRead();
         // Skip if framing error
-        if (!serialReceiveFramingError())
-        {
-            switch (c)
-            {
+        if (!serialReceiveFramingError()) {
+            switch (c) {
             case '\x7f':
                 if (!serialBufferLen)
                     break;
@@ -664,8 +647,7 @@ bool processSerialReceive()
                 if (serialOnReadChar)
                     serialOnReadChar(c);
                 // Check serial buffer size
-                if (serialBufferLen < (byte)sizeof(serialBuffer) - 1)
-                {
+                if (serialBufferLen < (byte)sizeof(serialBuffer) - 1) {
                     serialWrite(c);
                     serialBuffer[serialBufferLen++] = c;
                 }
