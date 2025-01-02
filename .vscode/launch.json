@@ -12,7 +12,7 @@
             "stopOnEntry": false,
             "configuration": "default",
             "preLaunchTask": "MPLABX Build",
-            "runMdbAsServer": true,
+            "runMdbAsServer": false,
             "preLaunchOnRestart": true,
         }
     ]

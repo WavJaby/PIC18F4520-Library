@@ -75,7 +75,7 @@ void main(void) {
     enableInterrupt_RB0External();  // enable RB0 interrupt
 
     // UART
-    serialBegin(9600, 0);
+    serialBegin(9600, 0b0);
     serialOnReadLine = onReadLine;
     serialOnReadChar = onReadChar;
 
