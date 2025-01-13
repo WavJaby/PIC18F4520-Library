@@ -1,15 +1,25 @@
 #ifdef __XC8
 #include <xc.h>
 #include <pic18f4520.h>
+#define bit __bit
+#define bool _Bool
 #else
 #define __interrupt(priority)
 #include "C:/Program Files/Microchip/xc8/v2.50/pic/include/proc/pic18f4520.h"
+#define bit unsigned char
+#define bool unsigned char
 #endif
 
-#include <stdbool.h>
+#include <stdio.h>
 
+#define false 0b0
+#define true 0b1
+
+#define uint16_t unsigned short
 #define byte unsigned char
 
+#define STR(x) #x
+#define XSTR(s) STR(s)
 #define MACRO_CODE_CONCAT(A, B) A##B
 #define MACRO_CODE_CONCAT3(A, B, C) A##B##C
 #define _pinGetPortBits(reg, port, pin) MACRO_CODE_CONCAT3(reg, port, bits)
@@ -194,10 +204,14 @@
  * T1CON: TIMER1 CONTROL REGISTER
  * https://ww1.microchip.com/downloads/en/devicedoc/39631e.pdf#page=129
  */
-#define enableTimer1(prescale) \
+#define enableTimer1(prescale)   \
+    T1CONbits.RD16 = 1;          \
+    T1CONbits.T1CKPS = prescale; \
+    T1CONbits.TMR1ON = 0b1
+#define configTimer1(prescale) \
     T1CONbits.RD16 = 1;        \
-    T1CONbits.TMR1ON = 0b1;    \
-    T1CONbits.T1CKPS = prescale;
+    T1CONbits.T1CKPS = prescale
+#define enableTimer1bit() T1CONbits.TMR1ON = 0b1
 #define disableTimer1() T1CONbits.TMR1ON = 0b0
 #define clearInterrupt_Timer1Overflow() PIR1bits.TMR1IF = 0b0
 #define enableInterrupt_Timer1Overflow(priority) \
@@ -211,17 +225,7 @@
  * @param period µs
  * @param prescale 1, 2, 4, 8
  */
-#define setTimer1InterruptPeriod(period, prescale)                                                             \
-    do {                                                                                                       \
-        if (prescale != 1 && prescale != 2 && prescale != 4 && prescale != 8) {                                \
-            /* Invalid prescaler value */                                                                      \
-            break;                                                                                             \
-        }                                                                                                      \
-        unsigned short tmr1Value = (unsigned short)(65535 -                                                    \
-                                                    ((period) * (_XTAL_FREQ / 1000000.0) / 4 / prescale) + 1); \
-        TMR1L = (unsigned char)(tmr1Value & 0xFF);                                                             \
-        TMR1H = (unsigned char)((tmr1Value >> 8) & 0xFF);                                                      \
-    } while (0)
+#define setTimer1InterruptPeriod(period, prescale) TMR1 = (unsigned short)(65535 - (period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1)
 #pragma endregion Timer1
 
 #pragma region Timer2
@@ -234,9 +238,13 @@
  * @param poscaleBits 4bit
  */
 #define enableTimer2(prescale, poscaleBits) \
-    T2CONbits.TMR2ON = 0b1;                 \
+    T2CONbits.T2CKPS = prescale;            \
+    T2CONbits.T2OUTPS = poscaleBits;        \
+    T2CONbits.TMR2ON = 0b1
+#define configTimer2(prescale, poscaleBits) \
     T2CONbits.T2CKPS = prescale;            \
     T2CONbits.T2OUTPS = poscaleBits
+#define enableTimer2bit() T2CONbits.TMR2ON = 0b1
 #define disableTimer2() T2CONbits.TMR2ON = 0b0
 #define clearInterrupt_Timer2PR2() PIR1bits.TMR2IF = 0b0
 #define enableInterrupt_Timer2PR2(priority) \
@@ -533,6 +541,10 @@
 #pragma endregion InterruptControl
 
 #pragma region UART
+#ifndef SEIAL_PRINTF_STATIC_SIZE
+#define SEIAL_PRINTF_STATIC_SIZE 16
+#endif
+char serialPrintfCache[SEIAL_PRINTF_STATIC_SIZE];
 
 #define serialReceiveEnable(state) RCSTAbits.CREN = state
 /**
@@ -597,6 +609,10 @@ void serialPrint(char *text) {
         TXREG = text[i];                     // write to TXREG will send data
     }
 }
+
+#define serialPrintf(format, ...)                    \
+    sprintf(serialPrintfCache, format, __VA_ARGS__); \
+    serialPrint(serialPrintfCache)
 
 char serialRead() {
     while (!interruptByReceiveUART());
