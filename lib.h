@@ -1177,3 +1177,52 @@ bool processSerialReceive() {
  * 3. 設定 RC2 為輸出
  */
 #define setCCP1ServoAngle(angle, prescale) setCCP1PwmDutyCycle(450 + ((2450 - 450) / 180.0) * (angle), prescale)
+
+/* ========== LED 二進位顯示巨集 / LED Binary Display Macros ========== */
+
+/**
+ * displayBinary3Pins() - 在指定腳位顯示 3 位元二進位值
+ *                        Display 3-bit binary value on specified pins
+ * @param n     數值 (0-7) / Value (0-7)
+ * @param pin0  bit 0 (LSB) 腳位 / bit 0 (LSB) pin
+ * @param pin1  bit 1 腳位 / bit 1 pin
+ * @param pin2  bit 2 (MSB) 腳位 / bit 2 (MSB) pin
+ */
+#define displayBinary3Pins(n, pin0, pin1, pin2) \
+    do {                                        \
+        digitalWrite(pin0, ((n) >> 0) & 1);     \
+        digitalWrite(pin1, ((n) >> 1) & 1);     \
+        digitalWrite(pin2, ((n) >> 2) & 1);     \
+    } while (0)
+
+/**
+ * displayBinary3() - 在 RD0-RD2 顯示 3 位元二進位值
+ *                    Display 3-bit binary value on RD0-RD2
+ * @param n  數值 (0-7) / Value (0-7)
+ */
+#define displayBinary3(n) displayBinary3Pins(n, PIN_RD0, PIN_RD1, PIN_RD2)
+
+/**
+ * displayBinary4Pins() - 在指定腳位顯示 4 位元二進位值
+ *                        Display 4-bit binary value on specified pins
+ * @param n     數值 (0-15) / Value (0-15)
+ * @param pin0  bit 0 (LSB) 腳位 / bit 0 (LSB) pin
+ * @param pin1  bit 1 腳位 / bit 1 pin
+ * @param pin2  bit 2 腳位 / bit 2 pin
+ * @param pin3  bit 3 (MSB) 腳位 / bit 3 (MSB) pin
+ */
+#define displayBinary4Pins(n, pin0, pin1, pin2, pin3) \
+    do {                                              \
+        digitalWrite(pin0, ((n) >> 0) & 1);           \
+        digitalWrite(pin1, ((n) >> 1) & 1);           \
+        digitalWrite(pin2, ((n) >> 2) & 1);           \
+        digitalWrite(pin3, ((n) >> 3) & 1);           \
+    } while (0)
+
+/**
+ * displayBinary4() - 在 RD0-RD3 顯示 4 位元二進位值
+ *                    Display 4-bit binary value on RD0-RD3
+ * @param n  數值 (0-15) / Value (0-15)
+ */
+#define displayBinary4_D(n) displayBinary4Pins(n, PIN_RD0, PIN_RD1, PIN_RD2, PIN_RD3)
+
