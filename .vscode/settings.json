@@ -12,6 +12,10 @@
     },
     "files.associations": {
         "*.h": "c",
-        "*.inc": "c"
+        "*.inc": "c",
+        "functional": "c",
+        "cstddef": "c",
+        "compare": "c",
+        "cstdint": "c"
     }
 }

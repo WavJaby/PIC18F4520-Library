@@ -12,29 +12,41 @@
 #include <xc.h>
 #include <pic18f4520.h>
 #define bit __bit      // XC8 的位元型別
+#ifndef bool
 #define bool _Bool     // XC8 的布林型別
+#endif
 #else
 // 非 XC8 環境 (用於 IDE 語法檢查/模擬)
 #define __interrupt(priority)  // 空的中斷巨集定義
 #include "C:/Program Files/Microchip/xc8/v2.50/pic/include/proc/pic18f4520.h"
-#define bit unsigned char      // 模擬位元型別
-#define bool unsigned char     // 模擬布林型別
+#define bit unsigned char   // 模擬位元型別
+#define bool unsigned char  // 模擬布林型別
 #endif
 
 #include <stdio.h>
 
 /* ========== 基本型別定義 / Basic Type Definitions ========== */
+#ifndef false
 #define false 0b0              // 布林假值
-#define true 0b1               // 布林真值
+#endif
 
+#ifndef true
+#define true 0b1               // 布林真值\
+#endif
+
+#ifndef uint16_t
 #define uint16_t unsigned short  // 16位元無號整數
+#endif
+
+#ifndef byte
 #define byte unsigned char       // 8位元無號整數 (位元組)
+#endif
 
 /* ========== 巨集輔助工具 / Macro Helpers ========== */
-#define STR(x) #x                                      // 字串化巨集
-#define XSTR(s) STR(s)                                 // 展開後字串化
-#define MACRO_CODE_CONCAT(A, B) A##B                   // 連接兩個符號
-#define MACRO_CODE_CONCAT3(A, B, C) A##B##C            // 連接三個符號
+#define STR(x) #x                                                            // 字串化巨集
+#define XSTR(s) STR(s)                                                       // 展開後字串化
+#define MACRO_CODE_CONCAT(A, B) A##B                                         // 連接兩個符號
+#define MACRO_CODE_CONCAT3(A, B, C) A##B##C                                  // 連接三個符號
 #define _pinGetPortBits(reg, port, pin) MACRO_CODE_CONCAT3(reg, port, bits)  // 取得埠位元結構
 #define _pinGetPinBit(reg, port, pin) MACRO_CODE_CONCAT(reg, pin)            // 取得腳位位元
 
@@ -164,11 +176,11 @@
  * 公式: TAD = (分頻比) / FOSC * 10^9 (轉換為奈秒)
  */
 #if (AD_CLOCK_SOURCE == AD_CLOCK_SOURCE_2TOSC)
-#define _AD_CONVETER_TAD 2 * 1000000000 / _XTAL_FREQ   // TAD = 2/FOSC
+#define _AD_CONVETER_TAD 2 * 1000000000 / _XTAL_FREQ  // TAD = 2/FOSC
 #elif (AD_CLOCK_SOURCE == AD_CLOCK_SOURCE_4TOSC)
-#define _AD_CONVETER_TAD 4 * 1000000000 / _XTAL_FREQ   // TAD = 4/FOSC
+#define _AD_CONVETER_TAD 4 * 1000000000 / _XTAL_FREQ  // TAD = 4/FOSC
 #elif (AD_CLOCK_SOURCE == AD_CLOCK_SOURCE_8TOSC)
-#define _AD_CONVETER_TAD 8 * 1000000000 / _XTAL_FREQ   // TAD = 8/FOSC
+#define _AD_CONVETER_TAD 8 * 1000000000 / _XTAL_FREQ  // TAD = 8/FOSC
 #elif (AD_CLOCK_SOURCE == AD_CLOCK_SOURCE_16TOSC)
 #define _AD_CONVETER_TAD 12 * 1000000000 / _XTAL_FREQ  // TAD = 12/FOSC
 #elif (AD_CLOCK_SOURCE == AD_CLOCK_SOURCE_32TOSC)
@@ -264,16 +276,16 @@
     T0CONbits.PSA = prescaleEnable;                               \
     T0CONbits.T0PS = prescale;
 
-#define disableTimer0() T0CONbits.TMR0ON = 0b0  // 停用 Timer0
+#define disableTimer0() T0CONbits.TMR0ON = 0b0                   // 停用 Timer0
 #define clearInterrupt_Timer0Overflow() INTCONbits.TMR0IF = 0b0  // 清除溢位中斷旗標
 
 /**
  * enableInterrupt_Timer0Overflow() - 啟用 Timer0 溢位中斷
  * @param priority  中斷優先權 (1=高, 0=低)
  */
-#define enableInterrupt_Timer0Overflow(priority) \
-    INTCONbits.TMR0IE = 0b1;                     /* 啟用 TMR0 溢位中斷 */ \
-    INTCON2bits.TMR0IP = priority;               /* 設定中斷優先權 */ \
+#define enableInterrupt_Timer0Overflow(priority)            \
+    INTCONbits.TMR0IE = 0b1;       /* 啟用 TMR0 溢位中斷 */ \
+    INTCON2bits.TMR0IP = priority; /* 設定中斷優先權 */     \
     clearInterrupt_Timer0Overflow()
 
 #define interruptByTimer0Overflow() INTCONbits.TMR0IF  // 檢查是否為 Timer0 溢位中斷
@@ -285,7 +297,9 @@
  *
  * 計算公式: TMR0 = 255 - (period × FOSC) / (4 × prescale × 10^6) + 1
  */
-#define setTimer0InterruptPeriod8(period, prescale) TMR0 = (byte)(255 - (period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1)
+#define setTimer0InterruptPeriod8(period, prescale)                                                                    \
+    _Static_assert((uint32_t)((period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1) <= 255, "Period time too long"); \
+    TMR0 = (byte)(255 - (period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1)
 
 /**
  * setTimer0InterruptPeriod16() - 設定 16 位元模式的中斷週期
@@ -294,7 +308,9 @@
  *
  * 計算公式: TMR0 = 65535 - (period × FOSC) / (4 × prescale × 10^6) + 1
  */
-#define setTimer0InterruptPeriod16(period, prescale) TMR0 = (unsigned short)(65535 - (period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1)
+#define setTimer0InterruptPeriod16(period, prescale)                                                                     \
+    _Static_assert((uint32_t)((period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1) <= 65535, "Period time too long"); \
+    TMR0 = (uint16_t)(65535 - (period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1)
 
 #pragma endregion Timer0
 
@@ -324,9 +340,9 @@
  *
  * 設定為 16 位元讀寫模式並啟用計時器
  */
-#define enableTimer1(prescale)   \
+#define enableTimer1(prescale)                         \
     T1CONbits.RD16 = 1;          /* 16 位元讀寫模式 */ \
-    T1CONbits.T1CKPS = prescale; /* 設定預分頻比 */ \
+    T1CONbits.T1CKPS = prescale; /* 設定預分頻比 */    \
     T1CONbits.TMR1ON = 0b1       /* 啟用 Timer1 */
 
 /**
@@ -337,17 +353,17 @@
     T1CONbits.RD16 = 1;        \
     T1CONbits.T1CKPS = prescale
 
-#define enableTimer1bit() T1CONbits.TMR1ON = 0b1   // 啟用 Timer1
-#define disableTimer1() T1CONbits.TMR1ON = 0b0     // 停用 Timer1
+#define enableTimer1bit() T1CONbits.TMR1ON = 0b1               // 啟用 Timer1
+#define disableTimer1() T1CONbits.TMR1ON = 0b0                 // 停用 Timer1
 #define clearInterrupt_Timer1Overflow() PIR1bits.TMR1IF = 0b0  // 清除溢位中斷旗標
 
 /**
  * enableInterrupt_Timer1Overflow() - 啟用 Timer1 溢位中斷
  * @param priority  中斷優先權 (1=高, 0=低)
  */
-#define enableInterrupt_Timer1Overflow(priority) \
-    PIE1bits.TMR1IE = 0b1;                       /* 啟用 TMR1 溢位中斷 */ \
-    IPR1bits.TMR1IP = priority;                  /* 設定中斷優先權 */ \
+#define enableInterrupt_Timer1Overflow(priority)         \
+    PIE1bits.TMR1IE = 0b1;      /* 啟用 TMR1 溢位中斷 */ \
+    IPR1bits.TMR1IP = priority; /* 設定中斷優先權 */     \
     clearInterrupt_Timer1Overflow()
 
 #define interruptByTimer1Overflow() PIR1bits.TMR1IF  // 檢查是否為 Timer1 溢位中斷
@@ -359,7 +375,9 @@
  *
  * 計算公式: TMR1 = 65535 - (period × FOSC) / (4 × prescale × 10^6) + 1
  */
-#define setTimer1InterruptPeriod(period, prescale) TMR1 = (unsigned short)(65535 - (period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1)
+#define setTimer1InterruptPeriod(period, prescale)                                                                       \
+    _Static_assert((uint32_t)((period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1) <= 65535, "Period time too long"); \
+    TMR1 = (uint16_t)(65535 - (period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1)
 #pragma endregion Timer1
 
 /* ========== 計時器2 / Timer2 ========== */
@@ -389,10 +407,10 @@
  *
  * 後分頻器用於減少中斷頻率: 實際中斷頻率 = 匹配頻率 / (postscale + 1)
  */
-#define enableTimer2(prescale, poscaleBits) \
-    T2CONbits.T2CKPS = prescale;            /* 設定預分頻比 */ \
-    T2CONbits.T2OUTPS = poscaleBits;        /* 設定後分頻比 */ \
-    T2CONbits.TMR2ON = 0b1                  /* 啟用 Timer2 */
+#define enableTimer2(prescale, poscaleBits)             \
+    T2CONbits.T2CKPS = prescale;     /* 設定預分頻比 */ \
+    T2CONbits.T2OUTPS = poscaleBits; /* 設定後分頻比 */ \
+    T2CONbits.TMR2ON = 0b1           /* 啟用 Timer2 */
 
 /**
  * configTimer2() - 設定 Timer2 但不啟用
@@ -403,8 +421,8 @@
     T2CONbits.T2CKPS = prescale;            \
     T2CONbits.T2OUTPS = poscaleBits
 
-#define enableTimer2bit() T2CONbits.TMR2ON = 0b1   // 啟用 Timer2
-#define disableTimer2() T2CONbits.TMR2ON = 0b0     // 停用 Timer2
+#define enableTimer2bit() T2CONbits.TMR2ON = 0b1          // 啟用 Timer2
+#define disableTimer2() T2CONbits.TMR2ON = 0b0            // 停用 Timer2
 #define clearInterrupt_Timer2PR2() PIR1bits.TMR2IF = 0b0  // 清除 TMR2/PR2 匹配中斷旗標
 
 /**
@@ -413,9 +431,9 @@
  *
  * 當 TMR2 值等於 PR2 時觸發中斷
  */
-#define enableInterrupt_Timer2PR2(priority) \
-    PIE1bits.TMR2IE = 0b1;                  /* 啟用 TMR2/PR2 匹配中斷 */ \
-    IPR1bits.TMR2IP = priority;             /* 設定中斷優先權 */ \
+#define enableInterrupt_Timer2PR2(priority)                  \
+    PIE1bits.TMR2IE = 0b1;      /* 啟用 TMR2/PR2 匹配中斷 */ \
+    IPR1bits.TMR2IP = priority; /* 設定中斷優先權 */         \
     clearInterrupt_Timer2PR2()
 
 #define interruptByTimer2PR2() PIR1bits.TMR2IF  // 檢查是否為 Timer2/PR2 匹配中斷
@@ -436,7 +454,9 @@
  * 計算公式: PR2 = (period × FOSC) / (4 × prescale × postscale × 10^6) - 1
  * 此值設定 TMR2 從 0 計數到 PR2 的週期
  */
-#define setTimer2InterruptPeriod(period, prescale, postscale) PR2 = (byte)((period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale / postscale - 1)
+#define setTimer2InterruptPeriod(period, prescale, postscale)                                                                      \
+    _Static_assert((uint32_t)((period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale / postscale - 1) <= 255, "Period time too long"); \
+    PR2 = (byte)((period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale / postscale - 1)
 
 #pragma endregion Timer2
 
@@ -464,20 +484,20 @@
  * enableTimer3() - 啟用 Timer3
  * @param prescale  預分頻比 (TIMER3_PRESCALE_x)
  */
-#define enableTimer3(prescale) \
-    T3CONbits.TMR3ON = 0b1;    /* 啟用 Timer3 */ \
-    T3CONbits.T3CKPS = prescale  /* 設定預分頻比 */
+#define enableTimer3(prescale)                    \
+    T3CONbits.TMR3ON = 0b1;     /* 啟用 Timer3 */ \
+    T3CONbits.T3CKPS = prescale /* 設定預分頻比 */
 
-#define disableTimer3() T3CONbits.TMR3ON = 0b0  // 停用 Timer3
+#define disableTimer3() T3CONbits.TMR3ON = 0b0                 // 停用 Timer3
 #define clearInterrupt_Timer3Overflow() PIR2bits.TMR3IF = 0b0  // 清除溢位中斷旗標
 
 /**
  * enableInterrupt_Timer3Overflow() - 啟用 Timer3 溢位中斷
  * @param priority  中斷優先權 (1=高, 0=低)
  */
-#define enableInterrupt_Timer3Overflow(priority) \
-    PIE2bits.TMR3IE = 0b1;                       /* 啟用 TMR3 溢位中斷 */ \
-    IPR2bits.TMR3IP = priority;                  /* 設定中斷優先權 */ \
+#define enableInterrupt_Timer3Overflow(priority)         \
+    PIE2bits.TMR3IE = 0b1;      /* 啟用 TMR3 溢位中斷 */ \
+    IPR2bits.TMR3IP = priority; /* 設定中斷優先權 */     \
     clearInterrupt_Timer3Overflow()
 
 #define interruptByTimer3Overflow() PIR2bits.TMR3IF  // 檢查是否為 Timer3 溢位中斷
@@ -489,7 +509,9 @@
  *
  * 計算公式: TMR3 = 65535 - (period × FOSC) / (4 × prescale × 10^6) + 1
  */
-#define setTimer3InterruptPeriod(period, prescale) TMR3 = (unsigned short)(65535 - (period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1)
+#define setTimer3InterruptPeriod(period, prescale)                                                                       \
+    _Static_assert((uint32_t)((period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1) <= 65535, "Period time too long"); \
+    TMR3 = (uint16_t)(65535 - (period) / (1000000.0 / _XTAL_FREQ) / 4 / prescale + 1)
 
 #pragma endregion Timer3
 
@@ -544,8 +566,8 @@
 #define setCCP1PwmDutyCycle(length, prescale)                                                \
     do {                                                                                     \
         unsigned int value = (unsigned int)((length) / (1000000.0 / _XTAL_FREQ) / prescale); \
-        CCP1CONbits.DC1B = (byte)value & 0b11;   /* 低 2 位 */                               \
-        CCPR1L = (byte)(value >> 2);             /* 高 8 位 */                               \
+        CCP1CONbits.DC1B = (byte)value & 0b11; /* 低 2 位 */                                 \
+        CCPR1L = (byte)(value >> 2);           /* 高 8 位 */                                 \
     } while (0)
 
 /**
@@ -559,8 +581,8 @@
 #define setCCP2PwmDutyCycle(length, prescale)                                                \
     do {                                                                                     \
         unsigned int value = (unsigned int)((length) / (1000000.0 / _XTAL_FREQ) / prescale); \
-        CCP2CONbits.DC2B = (byte)value & 0b11;   /* 低 2 位 */                               \
-        CCPR2L = (byte)(value >> 2);             /* 高 8 位 */                               \
+        CCP2CONbits.DC2B = (byte)value & 0b11; /* 低 2 位 */                                 \
+        CCPR2L = (byte)(value >> 2);           /* 高 8 位 */                                 \
     } while (0)
 
 #pragma endregion PWM_Control
@@ -594,8 +616,8 @@
 #define PIN_RE2 E, E2  // 腳位 10: RE2 / CS / AN7 (平行從機埠片選)
 
 /* 振盪器腳位 */
-#define PIN_OSC1       // 腳位 13: OSC1 / CLKI / RA7 (振盪器輸入)
-#define PIN_OSC2       // 腳位 14: OSC2 / CLKO / RA6 (振盪器輸出)
+#define PIN_OSC1  // 腳位 13: OSC1 / CLKI / RA7 (振盪器輸入)
+#define PIN_OSC2  // 腳位 14: OSC2 / CLKO / RA6 (振盪器輸出)
 
 /* PORTC 腳位 */
 #define PIN_RC0 C, C0  // 腳位 15: RC0 / T1OSO / T13CKI (Timer1 振盪器輸出)
@@ -723,6 +745,7 @@
  * @param value  通道編號 (0-12，對應 AN0-AN12)
  *
  * 設定 ADCON0 的 CHS<3:0> 位元
+ * 參考: https://ww1.microchip.com/downloads/en/devicedoc/39631e.pdf#page=225
  */
 #define setANPinAnalogChannelSelect(value) ADCON0bits.CHS = value
 
@@ -751,10 +774,10 @@
  * - 設定 ADC 時脈來源 (根據系統頻率自動選擇)
  * - 設定取樣時間 (根據時脈自動計算)
  */
-#define enableADConverter()                                                   \
-    ADCON0bits.ADON = 0b1;                /* 啟用 ADC */                      \
-    ADCON2bits.ADFM = 0b1;                /* 結果右對齊 */                    \
-    ADCON2bits.ADCS = AD_CLOCK_SOURCE;    /* 設定 ADC 時脈來源 */             \
+#define enableADConverter()                                       \
+    ADCON0bits.ADON = 0b1;                /* 啟用 ADC */          \
+    ADCON2bits.ADFM = 0b1;                /* 結果右對齊 */        \
+    ADCON2bits.ADCS = AD_CLOCK_SOURCE;    /* 設定 ADC 時脈來源 */ \
     ADCON2bits.ACQT = AD_ACQUISITION_TIME /* 設定取樣時間 */
 
 #define clearInterrupt_ADConverter() PIR1bits.ADIF = 0  // 清除 ADC 中斷旗標
@@ -765,10 +788,10 @@
  *
  * 當 ADC 轉換完成時觸發中斷
  */
-#define enableInterrupt_ADConverter(priority) \
-    clearInterrupt_ADConverter();             \
-    PIE1bits.ADIE = 1;                        /* 啟用 ADC 中斷 */ \
-    IPR1bits.ADIP = priority                  /* 設定中斷優先權 */
+#define enableInterrupt_ADConverter(priority)    \
+    clearInterrupt_ADConverter();                \
+    PIE1bits.ADIE = 1;       /* 啟用 ADC 中斷 */ \
+    IPR1bits.ADIP = priority /* 設定中斷優先權 */
 
 #define interruptByADConverter() PIR1bits.ADIF  // 檢查是否為 ADC 轉換完成中斷
 
@@ -853,10 +876,10 @@
  *
  * 中斷發生時必須在軟體中清除 INT1IF 旗標
  */
-#define enableInterrupt_RB1External(priority)    \
-    clearInterrupt_RB1External();                \
-    INTCON3bits.INT1IE = 0b1;                    /* 啟用 INT1 中斷 */ \
-    INTCON3bits.INT1IP = priority                /* 設定優先權 */
+#define enableInterrupt_RB1External(priority)          \
+    clearInterrupt_RB1External();                      \
+    INTCON3bits.INT1IE = 0b1;     /* 啟用 INT1 中斷 */ \
+    INTCON3bits.INT1IP = priority /* 設定優先權 */
 
 #define interruptByRB1External() INTCON3bits.INT1IF  // 檢查是否為 INT1 中斷
 
@@ -869,10 +892,10 @@
  *
  * 中斷發生時必須在軟體中清除 INT2IF 旗標
  */
-#define enableInterrupt_RB2External(priority)    \
-    clearInterrupt_RB2External();                \
-    INTCON3bits.INT2IE = 0b1;                    /* 啟用 INT2 中斷 */ \
-    INTCON3bits.INT2IP = priority                /* 設定優先權 */
+#define enableInterrupt_RB2External(priority)          \
+    clearInterrupt_RB2External();                      \
+    INTCON3bits.INT2IE = 0b1;     /* 啟用 INT2 中斷 */ \
+    INTCON3bits.INT2IP = priority /* 設定優先權 */
 
 #define interruptByRB2External() INTCON3bits.INT2IF  // 檢查是否為 INT2 中斷
 
@@ -887,10 +910,10 @@
  * 常用於鍵盤掃描、按鈕偵測等應用
  * 必須在軟體中清除 RBIF 旗標
  */
-#define enableInterrupt_RBPortChange(priority) \
-    clearInterrupt_RBPortChange();             \
-    INTCONbits.RBIE = 0b1;                     /* 啟用 PORTB 改變中斷 */ \
-    INTCON2bits.RBIP = priority                /* 設定優先權 */
+#define enableInterrupt_RBPortChange(priority)            \
+    clearInterrupt_RBPortChange();                        \
+    INTCONbits.RBIE = 0b1;      /* 啟用 PORTB 改變中斷 */ \
+    INTCON2bits.RBIP = priority /* 設定優先權 */
 
 #define interruptByRBPortChange() INTCONbits.RBIF  // 檢查是否為 PORTB 改變中斷
 
@@ -903,10 +926,10 @@
  *
  * 當 TXREG 為空（可寫入下一個位元組）時觸發
  */
-#define enableInterrupt_TransmitUART(priority) \
-    clearInterrupt_TransmitUART();             \
-    PIE1bits.TXIE = 0b1;                       /* 啟用 UART 傳送中斷 */ \
-    IPR1bits.TXIP = priority                   /* 設定優先權 */
+#define enableInterrupt_TransmitUART(priority)        \
+    clearInterrupt_TransmitUART();                    \
+    PIE1bits.TXIE = 0b1;     /* 啟用 UART 傳送中斷 */ \
+    IPR1bits.TXIP = priority /* 設定優先權 */
 
 #define interruptByTransmitUART() PIR1bits.TXIF  // 檢查是否為 UART 傳送中斷
 
@@ -919,10 +942,10 @@
  *
  * 當 RCREG 有資料可讀取時觸發
  */
-#define enableInterrupt_ReceiveUART(priority) \
-    clearInterrupt_ReceiveUART();             \
-    PIE1bits.RCIE = 0b1;                      /* 啟用 UART 接收中斷 */ \
-    IPR1bits.RCIP = priority                  /* 設定優先權 */
+#define enableInterrupt_ReceiveUART(priority)         \
+    clearInterrupt_ReceiveUART();                     \
+    PIE1bits.RCIE = 0b1;     /* 啟用 UART 接收中斷 */ \
+    IPR1bits.RCIP = priority /* 設定優先權 */
 
 #define interruptByReceiveUART() PIR1bits.RCIF  // 檢查是否為 UART 接收中斷
 
@@ -1009,7 +1032,7 @@ inline void serialBegin(long baudRate, byte receiveInterruptPriority) {
 
     // 設定鮑率產生器暫存器
     SPBRGH = (byte)(baudRateGenerator >> 8);  // 高位元組
-    SPBRG = (byte)baudRateGenerator;           // 低位元組
+    SPBRG = (byte)baudRateGenerator;          // 低位元組
 
     // 啟用串列埠
     RCSTAbits.SPEN = 1;  // 啟用串列埠 (設定 RX/TX 腳位為串列埠功能)
@@ -1047,13 +1070,18 @@ void serialWrite(char c) {
     TXREG = c;                           // 寫入 TXREG 開始傳送
 }
 
+void putch(char c) {
+    while (!serialAvailableForWrite());  // 忙碌等待
+    TXREG = c;                           // 寫入 TXREG 開始傳送
+}
+
 /**
  * serialPrint() - 傳送字串
  * @param text  以 null 結尾的字串
  *
  * 逐字元傳送直到遇到 '\0'
  */
-void serialPrint(char *text) {
+void serialPrint(char* text) {
     for (int i = 0; text[i] != '\0'; i++) {
         while (!serialAvailableForWrite());  // 忙碌等待
         TXREG = text[i];                     // 寫入 TXREG 開始傳送
@@ -1080,17 +1108,17 @@ void serialPrint(char *text) {
  */
 char serialRead() {
     while (!interruptByReceiveUART());  // 等待接收中斷旗標
-    return RCREG;                        // 讀取並回傳資料
+    return RCREG;                       // 讀取並回傳資料
 }
 
 /* 串列埠回呼函式指標 */
-void (*serialOnReadLine)(char *line, byte len);  // 收到完整一行時的回呼
-void (*serialOnReadChar)(char c);                 // 收到單一字元時的回呼
+void (*serialOnReadLine)(char* line, byte len);  // 收到完整一行時的回呼
+void (*serialOnReadChar)(char c);                // 收到單一字元時的回呼
 
 /* 串列埠接收緩衝區 */
-char serialBuffer[64];        // 接收緩衝區 (64 位元組)
-byte serialBufferLen = 0;     // 目前緩衝區長度
-char serialLastChar = '\0';   // 上一個接收的字元 (用於 CRLF 處理)
+char serialBuffer[64];       // 接收緩衝區 (64 位元組)
+byte serialBufferLen = 0;    // 目前緩衝區長度
+char serialLastChar = '\0';  // 上一個接收的字元 (用於 CRLF 處理)
 
 /**
  * processSerialReceive() - 處理串列埠接收
@@ -1145,8 +1173,8 @@ bool processSerialReceive() {
                     serialOnReadChar(c);
                 // 檢查緩衝區是否有空間
                 if (serialBufferLen < (byte)sizeof(serialBuffer) - 1) {
-                    serialWrite(c);                      // 回顯字元
-                    serialBuffer[serialBufferLen++] = c; // 加入緩衝區
+                    serialWrite(c);                       // 回顯字元
+                    serialBuffer[serialBufferLen++] = c;  // 加入緩衝區
                 }
             }
             serialLastChar = c;  // 記錄最後字元
@@ -1224,5 +1252,4 @@ bool processSerialReceive() {
  *                    Display 4-bit binary value on RD0-RD3
  * @param n  數值 (0-15) / Value (0-15)
  */
-#define displayBinary4_D(n) displayBinary4Pins(n, PIN_RD0, PIN_RD1, PIN_RD2, PIN_RD3)
-
+#define displayBinary4(n) displayBinary4Pins(n, PIN_RD0, PIN_RD1, PIN_RD2, PIN_RD3)
