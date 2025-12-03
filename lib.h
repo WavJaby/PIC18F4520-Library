@@ -31,7 +31,7 @@
 #endif
 
 #ifndef true
-#define true 0b1               // 布林真值\
+#define true 0b1               // 布林真值
 #endif
 
 #ifndef uint16_t
